@@ -1089,3 +1089,4 @@ hist(x)
 murders$rate <- with(murders, total / population * 100000)
 boxplot(rate~region, data = murders)
 ```
+
