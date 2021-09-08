@@ -1,0 +1,8 @@
+"0","ind<-match(c('AK', 'MI','IA'),murders$abb)"
+"0","murders$state[ind]"
+"1","[1]"
+"1"," ""Alaska""  "
+"1"," ""Michigan"""
+"1"," ""Iowa""    "
+"1","
+"

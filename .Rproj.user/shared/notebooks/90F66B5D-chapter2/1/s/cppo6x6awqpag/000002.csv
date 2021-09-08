@@ -1,0 +1,6 @@
+"0","i_max <- which.max(murders$total)"
+"0","murders$state[i_max]"
+"1","[1]"
+"1"," ""California"""
+"1","
+"

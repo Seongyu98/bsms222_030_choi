@@ -1,0 +1,5 @@
+"0","library(dslabs)"
+"0","data(murders)"
+"0","population_in_millions <- murders$population/10^6"
+"0","total_gun_murders <- murders$total"
+"0","plot(population_in_millions, total_gun_murders)"

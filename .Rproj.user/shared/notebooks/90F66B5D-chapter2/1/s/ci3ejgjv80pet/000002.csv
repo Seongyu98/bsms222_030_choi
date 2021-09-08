@@ -1,0 +1,8 @@
+"0","pop<-murders$population"
+"0","states<-murders$state"
+"0","names(pop)<-states"
+"0","which.min(murders$population)"
+"1","[1]"
+"1"," 51"
+"1","
+"

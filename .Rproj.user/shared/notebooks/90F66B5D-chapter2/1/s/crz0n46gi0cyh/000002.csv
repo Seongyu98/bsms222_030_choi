@@ -1,0 +1,6 @@
+"0","murder_rate<-murders$total/murders$population*100000"
+"0","mean(murder_rate)"
+"1","[1]"
+"1"," 2.779125"
+"1","
+"

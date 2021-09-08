@@ -1,0 +1,8 @@
+"0","ind <- match(c(""New York"", ""Florida"", ""Texas""), murders$state)"
+"0","ind"
+"1","[1]"
+"1"," 33"
+"1"," 10"
+"1"," 44"
+"1","
+"

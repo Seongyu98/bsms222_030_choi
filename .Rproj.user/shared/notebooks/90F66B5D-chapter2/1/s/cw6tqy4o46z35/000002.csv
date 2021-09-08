@@ -1,0 +1,8 @@
+"0","ind<-mean(murder_rate)"
+"0","states<-murder_rate<ind"
+"0","ave<-murders$state[states]"
+"0","length(ave)"
+"1","[1]"
+"1"," 27"
+"1","
+"

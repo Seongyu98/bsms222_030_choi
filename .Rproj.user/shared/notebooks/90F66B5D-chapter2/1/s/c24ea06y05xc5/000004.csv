@@ -1,0 +1,2 @@
+"0","x<-with(murders,total/population*100000)"
+"0","hist(x)"
