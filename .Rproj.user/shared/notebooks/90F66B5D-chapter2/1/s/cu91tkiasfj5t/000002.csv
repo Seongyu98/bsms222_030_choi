@@ -1,4 +1,0 @@
-"0","temp <- c(35, 88, 42, 84, 81, 30)"
-"0","city <- c(""Beijing"", ""Lagos"", ""Paris"", ""Rio de Janeiro"", "
-"0","          ""San Juan"", ""Toronto"")"
-"0","city_temps <- data.frame(name = city, temperature = temp)"

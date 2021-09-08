@@ -1,3 +1,0 @@
-"0","x <- murders$population / 10^6"
-"0","y <- murders$total"
-"0","plot(x, y)"

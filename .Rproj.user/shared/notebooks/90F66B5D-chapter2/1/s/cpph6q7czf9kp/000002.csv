@@ -1,2 +1,0 @@
-"0","west <- murders$region == ""West"""
-"0","safe <- murder_rate <= 1"

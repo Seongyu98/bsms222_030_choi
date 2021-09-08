@@ -1,7 +1,0 @@
-"0","library(dslabs)"
-"0","data(""murders"")"
-"0","murders$state[which.max(murders$population)]"
-"1","[1]"
-"1"," ""California"""
-"1","
-"
