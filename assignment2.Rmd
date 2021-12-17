@@ -1,0 +1,207 @@
+---
+title: "Visulize the distribution of EGFR status according to stage and age and express the primary location of EGFR status with color"
+output: pdf_document
+---
+
+# 1.Introduction
+EGFR is one of the ErbB tyrosine kinase receptors family; EGFR, HER-2, ErbB-3, ErbB-4) refers to a receptor that binds to an epidermal growth factor that promotes the growth and differentiation of epidermal cells.
+
+This protein, called EGFR, was first isolated from a growth factor by American biochemist Dr. Stanley Cohen, working with Rita Levi Montalcini of Washington University in St. Louis for 7 years from 1952 to 1952. This led to the discovery of how growth signals are transmitted from the outside to the inside of the cell.
+
+It is a transmembrane tyrosine kinase having an intracellular domain including an extracellular ligand-binding domain and a tyrosine kinase domain.
+
+When ligand binds to homodimer or heterodimer receptor, intracellular tyrosine kinase is activated.
+
+This EGFR-stimulated signal activates the phosphatidylinositol 3-kinase (PI3K)/AKT/mTOR, RAS/RAF/MAPK, and JAK/STAT signaling pathways.
+
+![EGFR signaling pathway](https://www.dovepress.com/cr_data/article_fulltext/s69000/69690/img/DDDT-69690-F01.jpg)
+EGFR mutation mainly occurs in the first 4 exons of the intracellular tyrosine kinase region, and exon 19 deletion is the most common (45%), followed by exon 21 point mutation (L858R, 40%).
+
+These mutations are mainly histologically expressed in adenocarcinoma, women, non-smokers, and Asians.
+
+![Lung cancer stage](https://cdn5.vectorstock.com/i/1000x1000/76/19/four-stages-of-lung-cancer-vector-22417619.jpg)
+
+After reading Proteogenomics of Non-Smoking Lung Cancer in East Asia Delineates Molecular Signatures of Pathogenesis and Progression, I wanted to know where the primary tumor is and what stage the tumor reaches according to the mutation of the EGFR gene.
+
+# 2. Dataset
+First, call the required library.
+Then call the required data. At this time, it is said that there is no column name.
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(cowplot)
+
+d<- read_xlsx("Table S1A_clinical_103patient.xlsx",col_names = F )
+```
+
+# 3. Visualization
+Use head code to see the data in the data set. 
+
+```{r}
+head(d)
+```
+
+Replace d with that of the data frame.
+
+```{r}
+d= d%>%
+  as.data.frame()
+```
+
+Let's check the class of d.
+
+```{r}
+class(d)
+```
+You called the column without a name while calling the data set, but now let's specify the name of the column.
+
+Let's specify the name of column in cols.
+At this time, cols will be'ID','Batch','gender','age','smoking','histology','stage','EGFR','Location'.
+```{r}
+cols=c('ID','Batch','gender','age','smoking','histology','stage','EGFR','Location')
+```
+
+Call data setd again with the column name saved as cols.
+At this time, the first line of the data set will be skipped.
+
+```{r}
+d<- read_xlsx("Table S1A_clinical_103patient.xlsx",col_names = cols, skip = 1)
+```
+Check the class of each column of the data set using sapply
+```{r}
+sapply(d,class)
+```
+
+Create a data frame from data for Female only.
+```{r}
+m<-d%>%
+  select(gender,age,smoking,stage,EGFR,Location)%>%
+  filter(gender=="Female")
+```
+
+In order to finally draw the desired graph, first check the number of each EGFR type.
+
+To get the number of EGFR by type, use the following code.
+```{r}
+m%>%
+  count(EGFR)%>%
+  ggplot(.,aes(EGFR,n,fill=EGFR))+geom_bar(stat = "identity",position = position_dodge())+labs(title = "Number of EGFRs by type in Female")+theme(axis.text.x=element_text(angle=60))+ylab("the number of EGFR types")
+```
+
+
+Since the degree of cancer progression is different for each EGFR type, check the stage of each type.
+
+To check the stage distribution by EGFR type, the following code is used.
+```{r}
+fig2<-bind_rows(m%>%
+  filter(EGFR=="exon19del")%>%
+  mutate(type= EGFR)%>%
+  select(type,stage),
+  m%>%
+    filter(EGFR=="L858R")%>%
+    mutate(type=EGFR)%>%
+    select(type,stage),
+  m%>%
+    filter(EGFR=="L858R.exon19del")%>%
+    mutate(type=EGFR)%>%
+    select(type,stage),
+  m%>%
+    filter(EGFR=="others")%>%
+    mutate(type=EGFR)%>%
+    select(type,stage),
+  m%>%
+     filter(EGFR=="WT")%>%
+  mutate(type= EGFR)%>%
+  select(type,stage))%>%
+  count(type,stage)%>%
+  mutate(stage=factor(stage,levels = rev(unique(stage))))%>%
+  
+  ggplot(aes(stage,n,fill=type))+labs(title = 'Stage distribution by EGFR type', x='Stage',y='the number of EGFR types')+scale_x_discrete(limits=c("IA","IIA","IB","IIB","IV"))+theme(axis.text.x=element_text(angle =90))+geom_bar(stat = "identity")+facet_wrap(~type,ncol = 2)
+```
+
+Now that we know the stage distribution for each EGFR type, let's look at the Location distribution.
+To find out the location distribution by EGFR type, the following code is used.
+
+```{r}
+fig3<-bind_rows(m%>%
+  filter(EGFR=="exon19del")%>%
+  mutate(type= EGFR)%>%
+  select(type,Location),
+  m%>%
+    filter(EGFR=="L858R")%>%
+    mutate(type=EGFR)%>%
+    select(type,Location),
+  m%>%
+    filter(EGFR=="L858R.exon19del")%>%
+    mutate(type=EGFR)%>%
+    select(type,Location),
+  m%>%
+    filter(EGFR=="others")%>%
+    mutate(type=EGFR)%>%
+    select(type,Location),
+  m%>%
+     filter(EGFR=="WT")%>%
+  mutate(type= EGFR)%>%
+  select(type,Location))%>%
+  count(type,Location)%>%
+  mutate(stage=factor(Location,levels = rev(unique(Location))))%>%
+  ggplot(aes(Location,n,fill=type))+labs(title = 'Location distribution by EGFR type', x='Location',y='the number of EGFR types')+theme(axis.text.x =element_text(angle =90))+geom_bar(stat = "identity")+facet_wrap(~type,ncol = 2)
+  
+```
+
+```{r}
+plot_grid(fig2,fig3)
+
+```
+
+Now, let's find out at which age and cancer stage the EGFR gene is abundant.
+Next, let's find out which Location the EGFR gene likes.
+
+```{r}
+fig4<-m%>%
+  group_by(stage)%>%
+  mutate(Ages=ifelse(age<50,"40s",ifelse(age<60,"50s",ifelse(age<70,"60s",ifelse(age<80,"70s",ifelse(age<90,"80s",""))))))%>%
+  ggplot(aes(stage,Ages))+geom_point(aes(color=stage,shape=EGFR))+labs(title="EGFR distribution according to stage and age")
+
+fig5<-m%>%
+  group_by(Location)%>%
+  mutate(Ages=ifelse(age<50,"40s",ifelse(age<60,"50s",ifelse(age<70,"60s",ifelse(age<80,"70s",ifelse(age<90,"80s",""))))))%>%
+  ggplot(aes(Location,Ages))+geom_point(aes(color=Location,shape=EGFR))+labs(title = "EGFR distribution according to location and age")
+  
+```
+
+```{r}
+plot_grid(fig4,fig5)
+```
+
+
+#4. Results
+Among EGFR types, L858R gene was the most common, followed by exon19del.
+
+Unlike women of other ages, only women in their 60s had EGFR mutations at stages IIA, IIB, and IIIA.
+
+Also, looking at the EGFR distribution graph according to locaton and age, the primary locations where the L858R EGFR gene is located in the 80s are LUL and RUL.
+
+
+#5. Discussion
+EGFR (epidermal growth factor receptor) is a protein on cells that helps them grow. A mutation in the gene for EGFR can make it grow too much, which can cause cancer.  
+
+There are different types of EGFR mutations. If you think of a mutation as a typo in the DNA, you can have missing or added words in the DNA, sometimes called deletions or insertions. You can also have places where the DNA is misspelled, which is called a point mutation. 
+MUtation have an EGFR 19 deletion or an EGFR L858R point mutation (the most common type of EGFR mutations that we know of). That information helps tell physicians exactly where the typo is in the DNA. 
+
+To prevent non-small cell lung cancer, you need to find a mutation in the EGFR gene that causes this cancer.
+
+There are generally two methods of detecting EGFR mutations at this time. Your best bet is to use comprehensive next-generation sequencing (NGS).
+
+This type of testing places tissue from a patient’s tumor (gathered from a biopsy) in a machine that looks for a large number of possible biomarkers at one time. There may be some situations where a patient can’t undergo the biopsy needed to perform NGS, and so liquid biopsy is recommended. A liquid biopsy can look for certain biomarkers in a patient’s blood. 
+
+If cancer is detected in advance using this method, the cancer should be treated using drugs such as EGFR inhibitor Tyrosine Kinase Inhibitors (TKIs) or cancer treatment methods such as chemotherapy and immunotherapy.
+
+#6. Reference
+Yi-Ju Chen, Theodoros I.Roumeliotis, Ya-Hsuan Chang, Ching-Tai Chen, Chia-Li Han, Miao-Hsia Lin, …&
+Yu-Ju Chen. (2020). Proteogenomics of Non-smoking Lung Cancer in East Asia Delineates Molecular
+Signatures of Pathogenesis and Progression. Cell.
+
